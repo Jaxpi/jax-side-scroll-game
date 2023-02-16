@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   class InputHandler {
     constructor() {
       this.keys = [];
+      this.touchY = '';
+      this.touchThreshold = 30;
       window.addEventListener("keydown", (e) => {
         if (
           (e.key === "ArrowDown" ||
@@ -32,6 +34,21 @@ document.addEventListener("DOMContentLoaded", function () {
           this.keys.splice(this.keys.indexOf(e.key), 1);
         }
       });
+      window.addEventListener('touchstart', e => {
+        this.touchY = e.changedTouches[0].pageY;
+      });
+      window.addEventListener('touchmove', e => {
+        const swipeDistance = e.changedTouches[0].pageY - this.touchY;
+        if (swipeDistance < -this.touchThreshold && this.keys.indexOf('swipe up') === -1) this.keys.push('swipe up');
+        else if (swipeDistance > this.touchThreshold && this.keys.indexOf('swipe down') === -1) {
+          this.keys.push('swipe down');
+          if (gameOver) restartGame();
+        }
+      });
+      window.addEventListener('touchend', e => {
+        this.keys.splice(this.keys.indexOf('swipe up'), 1);
+        this.keys.splice(this.keys.indexOf('swipe down'), 1);
+      });
     }
   }
 
@@ -52,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.frameInterval = 1000 / this.fps;
       this.speed = 0;
       this.vy = 0;
-      this.weight = .4;
+      this.weight = .3;
     }
     restart() {
       this.x = 100;
@@ -99,8 +116,8 @@ document.addEventListener("DOMContentLoaded", function () {
         this.speed = 5;
       } else if (input.keys.indexOf("ArrowLeft") > -1) {
         this.speed = -5;
-      } else if (input.keys.indexOf("ArrowUp") > -1 && this.onGround()) {
-        this.vy -= 20;
+      } else if ((input.keys.indexOf("ArrowUp") > -1 || input.keys.indexOf("swipe up") > -1)&& this.onGround()) {
+        this.vy -= 18;
       } else {
         this.speed = 0;
       }
@@ -231,9 +248,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (gameOver) {
       context.textAlign = 'center';
       context.fillStyle = 'black';
-      context.fillText('Game Over - Your Score Was ' + score + ' - Press ENTER to Restart', canvas.width / 2, 200);
+      context.fillText('Game Over - Press ENTER or Swipe Down to Restart', canvas.width / 2, 200);
       context.fillStyle = 'white';
-      context.fillText('Game Over - Your Score Was ' + score + ' - Press ENTER to Restart', canvas.width / 2 + 2, 202);
+      context.fillText('Game Over - Press ENTER or Swipe Down to Restart', canvas.width / 2 + 2, 202);
     }
   }
 
