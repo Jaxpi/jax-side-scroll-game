@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
-  canvas.width = 800;
+  canvas.width = 1400;
   canvas.height = 720;
   let enemies = [];
   let score = 0;
@@ -55,15 +55,15 @@ document.addEventListener("DOMContentLoaded", function () {
       this.weight = .4;
     }
     draw(context) {
-      context.strokeStyle = 'white';
-      context.strokeRect(this.x, this.y, this.width, this.height);
-      context.beginPath();
-      context.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
-      context.stroke();
-      context.strokeStyle = 'blue';
-      context.beginPath();
-      context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
-      context.stroke();
+      // context.strokeStyle = 'white';
+      // context.strokeRect(this.x, this.y, this.width, this.height);
+      // context.beginPath();
+      // context.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
+      // context.stroke();
+      // context.strokeStyle = 'blue';
+      // context.beginPath();
+      // context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
+      // context.stroke();
       context.drawImage(
         this.image,
         this.frameX * this.width,
@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const dx = (enemy.x + enemy.width / 2) - (this.x + this.width / 2);
         const dy = (enemy.y + enemy.height / 2) - (this.y + this.height / 2);
         const distance = Math.sqrt(dx * dx + dy * dy);
+        // added the - 10 part to try to make the collision area a little smaller
         if (distance < (enemy.width / 2 + this.width / 2) - 10) {
           gameOver = true;
         }
@@ -177,15 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
       this.markedForDeletion = false;
     }
     draw(context) {
-      context.strokeStyle = 'white';
-      context.strokeRect(this.x, this.y, this.width, this.height);
-      context.beginPath();
-      context.arc(this.x + this.width / 2 -5, this.y + this.height / 2 + 10, this.width / 2, 0, Math.PI * 2);
-      context.stroke();
-      context.strokeStyle = 'blue';
-      context.beginPath();
-      context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
-      context.stroke();
+      // context.strokeStyle = 'white';
+      // context.strokeRect(this.x, this.y, this.width, this.height);
+      // context.beginPath();
+      // context.arc(this.x + this.width / 2 -5, this.y + this.height / 2 + 10, this.width / 2, 0, Math.PI * 2);
+      // context.stroke();
+      // context.strokeStyle = 'blue';
+      // context.beginPath();
+      // context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
+      // context.stroke();
       context.drawImage(
         this.image,
         this.frameX * this.width,
