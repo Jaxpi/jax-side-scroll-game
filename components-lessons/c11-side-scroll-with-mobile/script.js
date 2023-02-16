@@ -8,41 +8,70 @@ document.addEventListener("DOMContentLoaded", function () {
   class InputHandler {
     constructor() {
       this.keys = [];
-      window.addEventListener('keydown', function (e) {
-        console.log(e);
-      })
-  }
+      window.addEventListener("keydown", (e) => {
+        if (
+          (e.key === "ArrowDown" ||
+            e.key === "ArrowUp" ||
+            e.key === "ArrowLeft" ||
+            e.key === "ArrowRight") &&
+          this.keys.indexOf(e.key) === -1
+        ) {
+          this.keys.push(e.key);
+        }
+      });
+      window.addEventListener("keyup", (e) => {
+        if (
+          e.key === "ArrowDown" ||
+          e.key === "ArrowUp" ||
+          e.key === "ArrowLeft" ||
+          e.key === "ArrowRight"
+        ) {
+          this.keys.splice(this.keys.indexOf(e.key), 1);
+        }
+      });
+    }
   }
 
   class Player {
-    constructor() {
-    
+    constructor(gameWidth, gameHeight) {
+      this.gameWidth = gameWidth;
+      this.gameHeight = gameHeight;
+      this.width = 200;
+      this.height = 200;
+      this.x = 0;
+      this.y = this.gameHeight - this.height;
+      this.image = document.getElementById('playerImage');
+    }
+    draw(ctx) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+    update() {
+      this.x++;
     }
   }
 
   class Background {
-    constructor() {
-    
-    }
+    constructor() {}
   }
 
   class Enemy {
-    constructor() {
-    
-    }
+    constructor() {}
   }
 
-  function handleEnemies() {
-    
-  }
+  function handleEnemies() {}
 
-  function displayStatusText(){
-
-  }
+  function displayStatusText() {}
 
   const input = new InputHandler();
+  const player = new Player(canvas.width, canvas.height);
 
-  function animate(){
-
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    player.draw(ctx);
+    player.update();
+    requestAnimationFrame(animate);
   }
+  animate();
 });
