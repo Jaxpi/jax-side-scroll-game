@@ -180,8 +180,10 @@ document.addEventListener("DOMContentLoaded", function () {
         this.frameTimer += deltaTime;
       }
       this.x -= this.speed;
-      if (this.x < 0 - this.width) this.markedForDeletion = true;
-      score++;
+      if (this.x < 0 - this.width) {
+        this.markedForDeletion = true;
+        score++;
+      }
     }
   }
 
