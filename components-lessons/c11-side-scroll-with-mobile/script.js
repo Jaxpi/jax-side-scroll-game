@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const ctx = canvas.getContext("2d");
   canvas.width = 800;
   canvas.height = 720;
+  let enemies = [];
 
   class InputHandler {
     constructor() {
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (this.x < 0) this.x = 0;
       else if (this.x > this.gameWidth - this.width)
         this.x = this.gameWidth - this.width;
-    
+
       // VERTICAL MOVEMENT
       this.y += this.vy;
       if (!this.onGround()) {
@@ -88,7 +89,8 @@ document.addEventListener("DOMContentLoaded", function () {
         this.vy = 0;
         this.frameY = 0;
       }
-      if (this.y >= this.gameHeight - this.height) this.y = this.gameHeight - this.height;
+      if (this.y >= this.gameHeight - this.height)
+        this.y = this.gameHeight - this.height;
     }
     onGround() {
       return this.y >= this.gameHeight - this.height;
@@ -96,34 +98,83 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   class Background {
-    constructor() {
-      constructor(gameWidth, gameHeight){
-        this.gameWidth = gameWidth;
-        this.gameHeight = gameHeight;
-        this.image = document.getElementById('backgroundImage');
-        this.x = 0;
-        this.y = 0;
-        this.width = 2400;
-        this.height = 720;
-      }
+    constructor(gameWidth, gameHeight) {
+      this.gameWidth = gameWidth;
+      this.gameHeight = gameHeight;
+      this.image = document.getElementById("backgroundImage");
+      this.x = 0;
+      this.y = 0;
+      this.width = 2400;
+      this.height = 720;
+      this.speed = 2;
+    }
+    draw(ctx) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      ctx.drawImage(
+        this.image,
+        this.x + this.width - this.speed,
+        this.y,
+        this.width,
+        this.height
+      );
+    }
+    update() {
+      this.x -= this.speed;
+      if (this.x < 0 - this.width) this.x = 0;
     }
   }
 
   class Enemy {
-    constructor() {}
+    constructor(gameWidth, gameHeight) {
+      this.gameWidth = gameWidth;
+      this.gameHeight = gameHeight;
+      this.width = 160;
+      this.height = 119;
+      this.image = document.getElementById("enemyImage");
+      this.x = this.gameWidth;
+      this.y = this.gameHeight - this.height;
+      this.frameX = 0;
+    }
+    draw(ctx) {
+      ctx.drawImage(
+        this.image,
+        this.frameX * this.width,
+        0,
+        this.width,
+        this.height,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    }
+    update() {
+      this.x --;
+    }
   }
 
-  function handleEnemies() {}
+  enemies.push(new Enemy(canvas.width, canvas.height));
+
+  function handleEnemies() {
+    enemies.forEach(enemy => {
+      enemy.draw(ctx);
+      enemy.update();
+    })
+  }
 
   function displayStatusText() {}
 
   const input = new InputHandler();
   const player = new Player(canvas.width, canvas.height);
+  const background = new Background(canvas.width, canvas.height);
 
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    background.draw(ctx);
+    // background.update();
     player.draw(ctx);
     player.update(input);
+    handleEnemies();
     requestAnimationFrame(animate);
   }
   animate();
