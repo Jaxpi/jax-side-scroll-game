@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   canvas.height = 720;
   let enemies = [];
   let score = 0;
+  let gameOver = false;
 
   class InputHandler {
     constructor() {
@@ -53,10 +54,13 @@ document.addEventListener("DOMContentLoaded", function () {
       this.vy = 0;
       this.weight = .4;
     }
-    draw(ctx) {
-      // ctx.fillStyle = "white";
-      // ctx.fillRect(this.x, this.y, this.width, this.height);
-      ctx.drawImage(
+    draw(context) {
+      context.strokeStyle = 'white';
+      context.strokeRect(this.x, this.y, this.width, this.height);
+      context.beginPath();
+      context.arc(this.x + this.width / 2, this.y + this.height / 2 +10, this.width / 2 - 10, 0, Math.PI * 2);
+      context.stroke();
+      context.drawImage(
         this.image,
         this.frameX * this.width,
         this.frameY * this.height,
@@ -68,7 +72,17 @@ document.addEventListener("DOMContentLoaded", function () {
         this.height
       );
     }
-    update(input, deltaTime) {
+    update(input, deltaTime, enemies) {
+      // COLLISION DETECTION
+      enemies.forEach(enemy => {
+        const dx = enemy.x - this.x;
+        const dy = enemy.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < enemy.width / 2 + this.width / 2) {
+          gameOver = true;
+        }
+})
+
       // SPRITE ANIMATION
       if (this.frameTimer > this.frameInterval) {
         if (this.frameX >= this.maxFrame) this.frameX = 0;
@@ -125,9 +139,9 @@ document.addEventListener("DOMContentLoaded", function () {
       this.height = 720;
       this.speed = 2;
     }
-    draw(ctx) {
-      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-      ctx.drawImage(
+    draw(context) {
+      context.drawImage(this.image, this.x, this.y, this.width, this.height);
+      context.drawImage(
         this.image,
         this.x + this.width - this.speed,
         this.y,
@@ -158,8 +172,17 @@ document.addEventListener("DOMContentLoaded", function () {
       this.speed = 4;
       this.markedForDeletion = false;
     }
-    draw(ctx) {
-      ctx.drawImage(
+    draw(context) {
+      context.strokeStyle = 'white';
+      context.strokeRect(this.x, this.y, this.width, this.height);
+      context.beginPath();
+      context.arc(this.x + this.width / 2 -5, this.y + this.height / 2 + 10, this.width / 2, 0, Math.PI * 2);
+      context.stroke();
+      context.strokeStyle = 'blue';
+      context.beginPath();
+      context.arc(this.x + this.width / 2 -5, this.y + this.height / 2 + 10, this.width / 2, 0, Math.PI * 2);
+      context.stroke();
+      context.drawImage(
         this.image,
         this.frameX * this.width,
         0,
@@ -202,12 +225,19 @@ document.addEventListener("DOMContentLoaded", function () {
     enemies = enemies.filter(enemy => !enemy.markedForDeletion);
   }
 
-  function displayStatusText(ctx) {
-    ctx.font = '40px Helvetica';
-    ctx.fillStyle = 'black';
-    ctx.fillText('Score: ' + score, 20, 50);
-    ctx.fillStyle = 'white';
-    ctx.fillText('Score: ' + score, 22, 52);
+  function displayStatusText(context) {
+    context.font = '40px Helvetica';
+    context.fillStyle = 'black';
+    context.fillText('Score: ' + score, 20, 50);
+    context.fillStyle = 'white';
+    context.fillText('Score: ' + score, 22, 52);
+    if (gameOver) {
+      context.textAlign = 'center';
+      context.fillStyle = 'black';
+      context.fillText('Game Over - Your Score Was ' + score, canvas.width / 2, 200);
+      context.fillStyle = 'white';
+      context.fillText('Game Over - Your Score Was ' + score, canvas.width / 2 + 2, 202);
+    }
   }
 
   const input = new InputHandler();
@@ -226,10 +256,10 @@ document.addEventListener("DOMContentLoaded", function () {
     background.draw(ctx);
     // background.update();
     player.draw(ctx);
-    player.update(input, deltaTime);
+    player.update(input, deltaTime, enemies);
     handleEnemies(deltaTime);
     displayStatusText(ctx);
-    requestAnimationFrame(animate);
+    if (!gameOver) requestAnimationFrame(animate);
   }
   animate(0);
 });
