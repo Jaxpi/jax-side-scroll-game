@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   canvas.width = 800;
   canvas.height = 720;
   let enemies = [];
+  let score = 0;
 
   class InputHandler {
     constructor() {
@@ -43,14 +44,18 @@ document.addEventListener("DOMContentLoaded", function () {
       this.y = this.gameHeight - this.height;
       this.image = document.getElementById("playerImage");
       this.frameX = 0;
+      this.maxFrame = 8,
       this.frameY = 0;
+      this.fps = 20;
+      this.frameTimer = 0;
+      this.frameInterval = 1000 / this.fps;
       this.speed = 0;
       this.vy = 0;
-      this.weight = 1;
+      this.weight = .4;
     }
     draw(ctx) {
-      ctx.fillStyle = "white";
-      ctx.fillRect(this.x, this.y, this.width, this.height);
+      // ctx.fillStyle = "white";
+      // ctx.fillRect(this.x, this.y, this.width, this.height);
       ctx.drawImage(
         this.image,
         this.frameX * this.width,
@@ -63,13 +68,23 @@ document.addEventListener("DOMContentLoaded", function () {
         this.height
       );
     }
-    update(input) {
+    update(input, deltaTime) {
+      // SPRITE ANIMATION
+      if (this.frameTimer > this.frameInterval) {
+        if (this.frameX >= this.maxFrame) this.frameX = 0;
+        else this.frameX++;
+        this.frameTimer = 0;
+      } else {
+        this.frameTimer += deltaTime;
+      }
+
+      // CONTROLS
       if (input.keys.indexOf("ArrowRight") > -1) {
         this.speed = 5;
       } else if (input.keys.indexOf("ArrowLeft") > -1) {
         this.speed = -5;
       } else if (input.keys.indexOf("ArrowUp") > -1 && this.onGround()) {
-        this.vy -= 32;
+        this.vy -= 20;
       } else {
         this.speed = 0;
       }
@@ -84,9 +99,11 @@ document.addEventListener("DOMContentLoaded", function () {
       this.y += this.vy;
       if (!this.onGround()) {
         this.vy += this.weight;
+        this.maxFrame = 5;
         this.frameY = 1;
       } else {
         this.vy = 0;
+        this.maxFrame = 8;
         this.frameY = 0;
       }
       if (this.y >= this.gameHeight - this.height)
@@ -134,7 +151,12 @@ document.addEventListener("DOMContentLoaded", function () {
       this.x = this.gameWidth;
       this.y = this.gameHeight - this.height;
       this.frameX = 0;
-      this.speed = 4
+      this.maxFrame = 5;
+      this.fps = 20;
+      this.frameTimer = 0;
+      this.frameInterval = 1000 / this.fps;
+      this.speed = 4;
+      this.markedForDeletion = false;
     }
     draw(ctx) {
       ctx.drawImage(
@@ -149,8 +171,17 @@ document.addEventListener("DOMContentLoaded", function () {
         this.height
       );
     }
-    update() {
+    update(deltaTime) {
+      if (this.frameTimer > this.frameInterval) {
+        if (this.frameX >= this.maxFrame) this.frameX = 0;
+        else this.frameX++;
+        this.frameTimer = 0;
+      } else {
+        this.frameTimer += deltaTime;
+      }
       this.x -= this.speed;
+      if (this.x < 0 - this.width) this.markedForDeletion = true;
+      score++;
     }
   }
 
@@ -162,13 +193,20 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       enemyTimer += deltaTime;
     }
-    enemies.forEach(enemy => {
+    enemies.forEach((enemy) => {
       enemy.draw(ctx);
-      enemy.update();
-    })
+      enemy.update(deltaTime);
+    });
+    enemies = enemies.filter(enemy => !enemy.markedForDeletion);
   }
 
-  function displayStatusText() {}
+  function displayStatusText(ctx) {
+    ctx.font = '40px Helvetica';
+    ctx.fillStyle = 'black';
+    ctx.fillText('Score: ' + score, 20, 50);
+    ctx.fillStyle = 'white';
+    ctx.fillText('Score: ' + score, 22, 52);
+  }
 
   const input = new InputHandler();
   const player = new Player(canvas.width, canvas.height);
@@ -186,8 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
     background.draw(ctx);
     // background.update();
     player.draw(ctx);
-    player.update(input);
+    player.update(input, deltaTime);
     handleEnemies(deltaTime);
+    displayStatusText(ctx);
     requestAnimationFrame(animate);
   }
   animate(0);
