@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
           this.keys.indexOf(e.key) === -1
         ) {
           this.keys.push(e.key);
-        }
+        } else if (e.key === 'Enter' && gameOver) restartGame();
       });
       window.addEventListener("keyup", (e) => {
         if (
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.gameHeight = gameHeight;
       this.width = 200;
       this.height = 200;
-      this.x = 0;
+      this.x = 100;
       this.y = this.gameHeight - this.height;
       this.image = document.getElementById("playerImage");
       this.frameX = 0;
@@ -54,16 +54,13 @@ document.addEventListener("DOMContentLoaded", function () {
       this.vy = 0;
       this.weight = .4;
     }
+    restart() {
+      this.x = 100;
+      this.y = this.gameHeight - this.height;
+      this.maxFrame = 8,
+      this.frameY = 0;
+    }
     draw(context) {
-      // context.strokeStyle = 'white';
-      // context.strokeRect(this.x, this.y, this.width, this.height);
-      // context.beginPath();
-      // context.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
-      // context.stroke();
-      // context.strokeStyle = 'blue';
-      // context.beginPath();
-      // context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
-      // context.stroke();
       context.drawImage(
         this.image,
         this.frameX * this.width,
@@ -144,6 +141,9 @@ document.addEventListener("DOMContentLoaded", function () {
       this.height = 720;
       this.speed = 2;
     }
+    restart() {
+      this.x = 0;
+    }
     draw(context) {
       context.drawImage(this.image, this.x, this.y, this.width, this.height);
       context.drawImage(
@@ -178,15 +178,6 @@ document.addEventListener("DOMContentLoaded", function () {
       this.markedForDeletion = false;
     }
     draw(context) {
-      // context.strokeStyle = 'white';
-      // context.strokeRect(this.x, this.y, this.width, this.height);
-      // context.beginPath();
-      // context.arc(this.x + this.width / 2 -5, this.y + this.height / 2 + 10, this.width / 2, 0, Math.PI * 2);
-      // context.stroke();
-      // context.strokeStyle = 'blue';
-      // context.beginPath();
-      // context.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
-      // context.stroke();
       context.drawImage(
         this.image,
         this.frameX * this.width,
@@ -231,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function displayStatusText(context) {
+    context.textAlign = 'left';
     context.font = '40px Helvetica';
     context.fillStyle = 'black';
     context.fillText('Score: ' + score, 20, 50);
@@ -239,11 +231,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (gameOver) {
       context.textAlign = 'center';
       context.fillStyle = 'black';
-      context.fillText('Game Over - Your Score Was ' + score, canvas.width / 2, 200);
+      context.fillText('Game Over - Your Score Was ' + score + ' - Press ENTER to Restart', canvas.width / 2, 200);
       context.fillStyle = 'white';
-      context.fillText('Game Over - Your Score Was ' + score, canvas.width / 2 + 2, 202);
+      context.fillText('Game Over - Your Score Was ' + score + ' - Press ENTER to Restart', canvas.width / 2 + 2, 202);
     }
   }
+
+  function restartGame() {
+    player.restart();
+    background.restart();
+    enemies = [];
+    score = 0;
+    gameOver = false;
+    animate(0);
+  };
 
   const input = new InputHandler();
   const player = new Player(canvas.width, canvas.height);
