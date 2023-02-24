@@ -46,67 +46,54 @@ export class FlyingEnemy extends Enemy {
     this.speedY = 0;
     this.maxFrame = 5;
     this.image = document.getElementById("enemy_fly");
-    // this.vx = Math.random() * 0.1 + 0.1;
+    this.angle = 0;
+    this.va = Math.sin(this.angle) * 0.1 + 0.1;
   }
   update(deltaTime) {
     super.update(deltaTime);
-    // this.y += Math.sin(this.angle) * this.curve;
-    // this.angle += 0.04;
+    this.angle += this.va;
+    this.y += Math.sin(this.angle);
   }
 }
 
 export class GroundEnemy extends Enemy {
-  //   constructor(game) {
-  //     super(game);
-  //     this.spriteWidth = 261;
-  //     this.spriteHeight = 209;
-  //     this.width = this.spriteWidth / 2;
-  //     this.height = this.spriteHeight / 2;
-  //     this.x = this.game.width;
-  //     this.y = Math.random() * this.game.height * 0.6;
-  //     this.image = ghost;
-  //     this.vx = Math.random() * 0.2 + 0.1;
-  //     this.angle = 0;
-  //     this.curve = Math.random() * 3;
-  //   }
-  //   update(deltaTime) {
-  //     super.update(deltaTime);
-  //     this.y += Math.sin(this.angle) * this.curve;
-  //     this.angle += 0.04;
-  //   }
-  //   draw(ctx) {
-  //     ctx.save();
-  //     ctx.globalAlpha = 0.7;
-  //     super.draw(ctx);
-  //     ctx.restore();
-  //   }
+  constructor(game) {
+    super();
+    this.game = game;
+    this.width = 60;
+    this.height = 87;
+    this.x = this.game.width;
+    this.y = this.game.height - this.height - this.game.groundMargin;
+    this.image = document.getElementById("enemy_plant");
+    this.speedX = 0;
+    this.speedY = 0;
+    this.maxFrame = 1;
+  }
 }
 
 export class ClimbingEnemy extends Enemy {
-  //   constructor(game) {
-  //     super(game);
-  //     this.spriteWidth = 310;
-  //     this.spriteHeight = 175;
-  //     this.width = this.spriteWidth / 3;
-  //     this.height = this.spriteHeight / 3;
-  //     this.x = Math.random() * this.game.width;
-  //     this.y = 0 - this.height;
-  //     this.image = spider;
-  //     this.vx = 0;
-  //     this.vy = Math.random() * 0.1 + 0.1;
-  //     this.maxLength = Math.random() * this.game.height;
-  //   }
-  //   update(deltaTime) {
-  //     if (this.y < 0 - this.height * 2) this.markedForDeletion = true;
-  //     super.update(deltaTime);
-  //     this.y += this.vy * deltaTime;
-  //     if (this.y > this.maxLength) this.vy *= -1;
-  //   }
-  //   draw(ctx) {
-  //     ctx.beginPath();
-  //     ctx.moveTo(this.x + this.width / 2, 0);
-  //     ctx.lineTo(this.x + this.width / 2, this.y + 10);
-  //     ctx.stroke();
-  //     super.draw(ctx);
-  //   }
+  constructor(game) {
+    super();
+    this.game = game;
+    this.width = 120;
+    this.height = 144;
+    this.x = this.game.width;
+    this.y = Math.random() * this.game.height * 0.5;
+    this.image = document.getElementById("enemy_spider_big");
+    this.speedX = 0;
+    this.speedY = Math.random() > 0.5 ? 1 : -1;
+    this.maxFrame = 5;
+  }
+  update(deltaTime) {
+      super.update(deltaTime);
+      if (this.y > this.game.height - this.height - this.game.groundMargin) this.speedY *= -1;
+      if (this.y < -this.height) this.markedForDeletion = true;
+  }
+  draw(context) {
+      super.draw(context);
+      context.beginPath();
+      context.moveTo(this.x + this.width/2, 0);
+      context.lineTo(this.x + this.width/2, this.y + 50);
+      context.stroke();
+  }
 }
