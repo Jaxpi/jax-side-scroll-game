@@ -19,14 +19,12 @@ export class Player {
     this.speed = 0;
     this.maxSpeed = 10;
     this.states = [
-      new Sitting(this),
-      new Running(this),
-      new Jumping(this),
-      new Falling(this),
-      new Rolling(this),
+      new Sitting(this.game),
+      new Running(this.game),
+      new Jumping(this.game),
+      new Falling(this.game),
+      new Rolling(this.game),
     ];
-    this.currentState = this.states[0];
-    this.currentState.enter();
   }
   update(input, deltaTime) {
     this.checkCollision();
