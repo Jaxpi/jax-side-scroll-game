@@ -29,8 +29,8 @@ window.addEventListener("load", function () {
       this.enemyTimer = 0;
       this.enemyInterval = 1000;
       this.debug = false;
-        this.score = 0;
-        this.winningScore = 25;
+      this.score = 0;
+      this.winningScore = 25;
       this.fontColor = "black";
       this.time = 0;
       this.maxTime = 20000;
