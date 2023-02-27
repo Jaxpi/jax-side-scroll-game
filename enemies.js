@@ -20,6 +20,8 @@ class Enemy {
     if (this.x + this.width < 0) this.markedForDeletion = true;
   }
   draw(context) {
+    if (this.game.debug)
+      context.strokeRect(this.x, this.y, this.width, this.height);
     context.drawImage(
       this.image,
       this.frameX * this.width,
@@ -85,15 +87,16 @@ export class ClimbingEnemy extends Enemy {
     this.maxFrame = 5;
   }
   update(deltaTime) {
-      super.update(deltaTime);
-      if (this.y > this.game.height - this.height - this.game.groundMargin) this.speedY *= -1;
-      if (this.y < -this.height) this.markedForDeletion = true;
+    super.update(deltaTime);
+    if (this.y > this.game.height - this.height - this.game.groundMargin)
+      this.speedY *= -1;
+    if (this.y < -this.height) this.markedForDeletion = true;
   }
   draw(context) {
-      super.draw(context);
-      context.beginPath();
-      context.moveTo(this.x + this.width/2, 0);
-      context.lineTo(this.x + this.width/2, this.y + 50);
-      context.stroke();
+    super.draw(context);
+    context.beginPath();
+    context.moveTo(this.x + this.width / 2, 0);
+    context.lineTo(this.x + this.width / 2, this.y + 50);
+    context.stroke();
   }
 }
