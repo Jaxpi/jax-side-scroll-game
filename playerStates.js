@@ -1,16 +1,11 @@
 export const states = {
-  STANDING: 0,
-  SITTING: 1,
-  RUNNING: 2,
-  JUMPING: 3,
-  FALLING: 4,
-
-  // DAZED: 4,
-
-  // ROLLING: 6,
-  // A1: 7,
-  // KO: 8,
-  // A2: 9,
+  SITTING: 0,
+  RUNNING: 1,
+  JUMPING: 2,
+  FALLING: 3,
+  ROLLING: 4,
+  DIVING: 5,
+  HIT: 6,
 };
 
 class State {
@@ -19,33 +14,13 @@ class State {
   }
 }
 
-export class Standing extends State {
-  constructor(player) {
-    super("STANDING");
-    this.player = player;
-  }
-  enter() {
-    this.frameX = 0;
-    this.player.frameY = 0;
-    this.player.speed = 0;
-    this.player.maxFrame = 6;
-  }
-  handleInput(input) {
-    if (input.includes("ArrowLeft") || input.includes("ArrowRight")) {
-      this.player.setState(states.RUNNING, 1);
-    } else if (input.includes("ArrowDown")) {
-      this.player.setState(states.SITTING, 0);
-    }
-  }
-}
-
 export class Sitting extends State {
   constructor(player) {
     super("SITTING");
     this.player = player;
   }
-    enter() {
-        this.frameX = 0;
+  enter() {
+    this.player.frameX = 0;
     this.player.frameY = 5;
     this.player.speed = 0;
     this.player.maxFrame = 4;
@@ -53,6 +28,8 @@ export class Sitting extends State {
   handleInput(input) {
     if (input.includes("ArrowLeft") || input.includes("ArrowRight")) {
       this.player.setState(states.RUNNING, 1);
+    } else if (input.includes(' ')) {
+      this.player.setState(states.ROLLING, 2);
     }
   }
 }
@@ -62,17 +39,19 @@ export class Running extends State {
     super("RUNNING");
     this.player = player;
   }
-    enter() {
-        this.frameX = 0;
+  enter() {
+    this.player.frameX = 0;
     this.player.frameY = 3;
     this.player.speed = -this.player.maxSpeed;
     this.player.maxFrame = 8;
   }
-  handleInput(input) {
+    handleInput(input) {
     if (input.includes("ArrowDown")) {
       this.player.setState(states.SITTING, 0);
     } else if (input.includes("ArrowUp")) {
       this.player.setState(states.JUMPING, 1);
+    } else if (input.includes(" ")) {
+      this.player.setState(states.ROLLING, 2);
     }
   }
 }
@@ -82,8 +61,8 @@ export class Jumping extends State {
     super("JUMPING");
     this.player = player;
   }
-    enter() {
-        this.frameX = 0;
+  enter() {
+    this.player.frameX = 0;
     this.player.frameY = 1;
     if (this.player.onGround()) this.player.vy -= 28;
     this.player.speed = -this.player.maxSpeed * 0.5;
@@ -92,6 +71,8 @@ export class Jumping extends State {
   handleInput(input) {
     if (this.player.vy > this.player.weight) {
       this.player.setState(states.FALLING, 1);
+    } else if (input.includes(' ')) {
+      this.player.setState(states.ROLLING, 2);
     }
   }
 }
@@ -101,28 +82,38 @@ export class Falling extends State {
     super("FALLING");
     this.player = player;
   }
-    enter() {
-        this.frameX = 0;
+  enter() {
+    this.player.frameX = 0;
     this.player.frameY = 2;
     this.player.maxFrame = 6;
   }
   handleInput(input) {
-    if (this.player.onGround()) this.player.setState(states.RUNNING, 1);
+      if (this.player.onGround())
+          this.player.setState(states.RUNNING, 1);
   }
 }
 
-//   export class FallingRight extends State {
-//     constructor(player) {
-//       super("FALLING RIGHT");
-//       this.player = player;
-//     }
-//     enter() {
-//       this.player.frameY = 4;
-//       this.player.maxFrame = 6;
-//     }
-//     handleInput(input) {
-//       if (input === "PRESS left") this.player.setState(states.FALLING_LEFT);
-//       else if (this.player.onGround())
-//         this.player.setState(states.STANDING_RIGHT);
-//     }
-//   }
+export class Rolling extends State {
+  constructor(player) {
+    super('ROLLING');
+    this.player = player;
+  }
+  enter() {
+    this.player.frameX = 0;
+    this.player.frameY = 6;
+    this.player.maxFrame = 6;
+  }
+  handleInput(input) {
+    if (!input.includes(' ') && this.player.onGround()) {
+      this.player.setState(states.RUNNING, 1);
+    } else if (!input.includes(' ') && !this.player.onGround()) {
+      this.player.setState(states.FALLING, 1);
+    } else if (
+      input.includes(' ') &&
+      input.includes("ArrowUp") &&
+      this.player.onGround()
+    ) {
+      this.player.vy -= 28;
+    }
+  }
+}
