@@ -43,7 +43,7 @@ export class Player {
 
     // HORIZONTAL MOVEMENT
     this.x += this.speed;
-    if (input.includes("ArrowLeft")) this.speed = -this.maxSpeed;
+    if (input.includes("ArrowLeft") && this.currentState !== this.states[6]) this.speed = -this.maxSpeed;
     else if (input.includes("ArrowRight")) this.speed = this.maxSpeed;
     else this.speed = 0;
     if (this.x < 0) this.x = 0;
