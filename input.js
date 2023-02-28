@@ -16,7 +16,7 @@ export class InputHandler {
       ) {
         this.keys.push(e.key);
       } else if (e.key === "d") this.game.debug = !this.game.debug;
-      //   } else if (e.key === "Enter" && gameOver) restartGame();
+        else if (e.key === "Enter" && this.game.gameOver) window.location.reload();
     });
     window.addEventListener("keyup", (e) => {
       if (

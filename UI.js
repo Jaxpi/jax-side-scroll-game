@@ -47,7 +47,7 @@ export class UI {
         );
         context.font = this.fontSize * 0.8 + "px " + this.fontFamily;
         context.fillText(
-          "Enemies Have Won - Try Again",
+          "Enemies Have Won - Press Enter to Try Again",
           this.game.width * 0.5,
           this.game.height * 0.5 + 20
         );
